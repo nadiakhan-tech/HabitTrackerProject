@@ -1,0 +1,141 @@
+﻿@page
+@model LogoutModel
+@{
+    ViewData["Title"] = "Log out";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logout - HabitTracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f0f2ff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            background: #534AB7;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+            nav .logo {
+                color: white;
+                font-size: 20px;
+                font-weight: 700;
+                text-decoration: none;
+            }
+
+        .page-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 24px rgba(83,74,183,0.13);
+            text-align: center;
+        }
+
+        .auth-icon {
+            font-size: 48px;
+            margin-bottom: 1rem;
+        }
+
+        .auth-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1E1E2E;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-sub {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .logout-btn {
+            width: 100%;
+            background: #534AB7;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.9rem;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 0.75rem;
+            transition: background 0.2s;
+        }
+
+            .logout-btn:hover {
+                background: #3C3489;
+            }
+
+        .cancel-btn {
+            width: 100%;
+            background: transparent;
+            border: 2px solid #534AB7;
+            color: #534AB7;
+            border-radius: 12px;
+            padding: 0.85rem;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            text-decoration: none;
+            display: block;
+            transition: background 0.2s;
+        }
+
+            .cancel-btn:hover {
+                background: #EEEDFE;
+            }
+    </style>
+</head>
+<body>
+    <nav>
+        <a class="logo" href="/">🌟 HabitTracker</a>
+    </nav>
+
+    <div class="page-wrap">
+        <div class="auth-container">
+            <div class="auth-icon">👋</div>
+            <div class="auth-title">Logging you out</div>
+            <div class="auth-sub">Are you sure you want to log out? Your habits and streaks will be saved and waiting for you when you come back!</div>
+
+            <form method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="logout-btn">Yes, log me out</button>
+            </form>
+
+            <a href="/Habits" class="cancel-btn">Cancel — take me back</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1 @@
+﻿SELECT Id, Email, UserName, PasswordHash FROM AspNetUsers

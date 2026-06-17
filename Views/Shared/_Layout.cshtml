@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Habit Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f0f2ff;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: #534AB7;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+            nav .logo {
+                color: white;
+                font-size: 20px;
+                font-weight: 700;
+                text-decoration: none;
+            }
+
+            nav .date {
+                color: #CECBF6;
+                font-size: 13px;
+            }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-username {
+            color: #CECBF6;
+            font-size: 13px;
+        }
+
+        .nav-login {
+            color: #CECBF6;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+            .nav-login:hover {
+                color: white;
+            }
+
+        .nav-register {
+            background: #1D9E75;
+            color: white;
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+            .nav-register:hover {
+                background: #178a63;
+            }
+
+        .nav-logout {
+            background: transparent;
+            border: 1.5px solid #CECBF6;
+            color: #CECBF6;
+            border-radius: 8px;
+            padding: 5px 13px;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+        }
+
+            .nav-logout:hover {
+                background: rgba(255,255,255,0.1);
+            }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1D9E75;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a class="logo" href="/Habits">🌟 HabitTracker</a>
+        <div class="nav-right">
+            <span class="date" id="navDate"></span>
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                <span class="nav-username">Hi, @User.Identity.Name! 👋</span>
+                <form method="post" action="/Identity/Account/Logout" style="margin:0;">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="returnUrl" value="/" />
+                    <button type="submit" class="nav-logout">Logout</button>
+                </form>
+            }
+            else
+            {
+                <a href="/Identity/Account/Login" class="nav-login">Login</a>
+                <a href="/Identity/Account/Register" class="nav-register">Register</a>
+            }
+        </div>
+    </nav>
+    <div class="container">
+        @RenderBody()
+    </div>
+    <div class="toast" id="toast"></div>
+    <script>
+        const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const now = new Date();
+        document.getElementById('navDate').textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()];
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        }
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

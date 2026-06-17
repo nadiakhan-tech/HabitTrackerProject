@@ -1,0 +1,397 @@
+﻿@model IEnumerable<HabitTrackerProject.Models.Habit>
+@{
+    var total = Model.Count();
+    var done = Model.Count(h => h.CompletedToday);
+    var percent = total > 0 ? (done * 100 / total) : 0;
+    var quotes = new[] {
+        "Small progress each day leads to big results.",
+        "You don't have to be great to start, but you have to start to be great.",
+        "Discipline is choosing between what you want now and what you want most.",
+        "Every day is a new chance to be better than yesterday.",
+        "Consistency is the key to achieving and maintaining the results you want.",
+        "Success is the sum of small efforts repeated day in and day out."
+    };
+    var quote = quotes[new Random().Next(quotes.Length)];
+}
+<style>
+    .quote-box {
+        background: #534AB7;
+        border-radius: 14px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.25rem;
+        color: #CECBF6;
+        font-size: 13px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .progress-label {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 6px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .progress-bg {
+        background: #e0e0f0;
+        border-radius: 99px;
+        height: 10px;
+        margin-bottom: 1.25rem;
+    }
+
+    .progress-fill {
+        background: #1D9E75;
+        height: 10px;
+        border-radius: 99px;
+        transition: width 0.5s ease;
+    }
+
+    .section-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 0.75rem;
+    }
+
+    .habit-card {
+        background: white;
+        border-radius: 14px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 0.65rem;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        box-shadow: 0 2px 8px rgba(83,74,183,0.07);
+    }
+
+        .habit-card.done {
+            opacity: 0.55;
+        }
+
+    .tick-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 2.5px solid #1D9E75;
+        background: transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: background 0.2s;
+    }
+
+        .tick-btn.checked {
+            background: #1D9E75;
+        }
+
+            .tick-btn.checked::after {
+                content: '✓';
+                color: white;
+                font-size: 15px;
+                font-weight: 700;
+            }
+
+    .habit-info {
+        flex: 1;
+    }
+
+    .habit-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #222;
+    }
+
+        .habit-name.crossed {
+            text-decoration: line-through;
+            color: #aaa;
+        }
+
+    .habit-desc {
+        font-size: 12px;
+        color: #888;
+        margin-top: 2px;
+    }
+
+    .streak-badge {
+        background: #FAEEDA;
+        border-radius: 8px;
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #854F0B;
+        flex-shrink: 0;
+    }
+
+    .del-btn {
+        background: none;
+        border: none;
+        color: #ddd;
+        cursor: pointer;
+        font-size: 16px;
+        padding: 4px;
+        flex-shrink: 0;
+    }
+
+        .del-btn:hover {
+            color: #e24b4a;
+        }
+
+    .badge-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 1.25rem;
+    }
+
+    .badge {
+        background: #f0f0f0;
+        border-radius: 8px;
+        padding: 4px 12px;
+        font-size: 12px;
+        color: #888;
+    }
+
+        .badge.earned {
+            background: #FAEEDA;
+            color: #854F0B;
+        }
+
+    .add-btn {
+        width: 100%;
+        background: #534AB7;
+        color: white;
+        border: none;
+        border-radius: 14px;
+        padding: 0.85rem;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-bottom: 0.65rem;
+        font-family: 'Poppins', sans-serif;
+    }
+
+        .add-btn:hover {
+            background: #3C3489;
+        }
+
+    .motiv-btn {
+        width: 100%;
+        background: transparent;
+        border: 2px solid #534AB7;
+        color: #534AB7;
+        border-radius: 14px;
+        padding: 0.75rem;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: 'Poppins', sans-serif;
+    }
+
+        .motiv-btn:hover {
+            background: #EEEDFE;
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: #aaa;
+        font-size: 14px;
+    }
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+    .modal {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        width: 90%;
+        max-width: 420px;
+    }
+
+        .modal h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #222;
+        }
+
+        .modal input, .modal textarea {
+            width: 100%;
+            border: 1.5px solid #e0e0f0;
+            border-radius: 10px;
+            padding: 0.65rem 0.875rem;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 0.75rem;
+            outline: none;
+        }
+
+            .modal input:focus, .modal textarea:focus {
+                border-color: #534AB7;
+            }
+
+    .modal-btns {
+        display: flex;
+        gap: 10px;
+    }
+
+    .modal-save {
+        flex: 1;
+        background: #534AB7;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 0.75rem;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .modal-cancel {
+        flex: 1;
+        background: #f0f0f0;
+        color: #555;
+        border: none;
+        border-radius: 10px;
+        padding: 0.75rem;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .motiv-modal {
+        text-align: center;
+    }
+
+        .motiv-modal .big-quote {
+            font-size: 22px;
+            margin-bottom: 1rem;
+        }
+
+        .motiv-modal p {
+            font-size: 15px;
+            color: #444;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+</style>
+
+<div class="quote-box">
+    <span style="font-size:18px;">✦</span>
+    <span>"@quote"</span>
+</div>
+
+<div class="progress-label">
+    <span>Today's progress</span>
+    <span style="font-weight:600; color:#222;">@done / @total done</span>
+</div>
+<div class="progress-bg">
+    <div class="progress-fill" style="width:@percent%"></div>
+</div>
+
+@if (Model.Any())
+{
+    var maxStreak = Model.Max(h => h.Streak);
+    <div class="badge-row">
+        <div class="badge @(maxStreak >= 7 ? "earned" : "")">🥉 7-day streak</div>
+        <div class="badge @(maxStreak >= 30 ? "earned" : "")">🥈 30-day streak</div>
+        <div class="badge @(maxStreak >= 100 ? "earned" : "")">🥇 100-day streak</div>
+    </div>
+}
+
+<div class="section-label">Your habits</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <div style="font-size:40px; margin-bottom:0.5rem;">🌱</div>
+        <div>No habits yet! Add your first one below.</div>
+    </div>
+}
+
+@foreach (var habit in Model)
+{
+    <div class="habit-card @(habit.CompletedToday ? "done" : "")">
+        <form method="post" action="/Habits/Complete/@habit.Id" style="margin:0;">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="tick-btn @(habit.CompletedToday ? "checked" : "")" title="Mark done"></button>
+        </form>
+        <div class="habit-info">
+            <div class="habit-name @(habit.CompletedToday ? "crossed" : "")">@habit.Name</div>
+            @if (!string.IsNullOrEmpty(habit.Description))
+            {
+                <div class="habit-desc">@habit.Description</div>
+            }
+        </div>
+        <div class="streak-badge">🔥 @habit.Streak</div>
+        <form method="post" action="/Habits/Delete/@habit.Id" style="margin:0;" onsubmit="return confirm('Delete this habit?')">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="del-btn" title="Delete">✕</button>
+        </form>
+    </div>
+}
+
+<button class="add-btn" onclick="document.getElementById('addModal').classList.add('open')">+ Add new habit</button>
+<button class="motiv-btn" onclick="showMotivation()">I need motivation right now 💜</button>
+
+<div class="modal-overlay" id="addModal">
+    <div class="modal">
+        <h3>Add a new habit</h3>
+        <form method="post" action="/Habits/Create">
+            @Html.AntiForgeryToken()
+            <input type="text" name="Name" placeholder="Habit name e.g. Morning walk" required />
+            <textarea name="Description" placeholder="Description (optional)" rows="2"></textarea>
+            <div class="modal-btns">
+                <button type="button" class="modal-cancel" onclick="document.getElementById('addModal').classList.remove('open')">Cancel</button>
+                <button type="submit" class="modal-save">Save habit ✓</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="motivModal">
+    <div class="modal motiv-modal">
+        <div class="big-quote" id="motivQuote"></div>
+        <p id="motivText"></p>
+        <button class="modal-save" onclick="document.getElementById('motivModal').classList.remove('open')">I feel better now 💪</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const motivQuotes = [
+            { icon: "🌟", text: "You've already shown up. That's more than most people do. Keep going!" },
+            { icon: "🔥", text: "Every expert was once a beginner. Every pro was once an amateur. Keep pushing!" },
+            { icon: "💜", text: "You are stronger than you think. One small step today is enough." },
+            { icon: "🚀", text: "Progress, not perfection. Even 1% better is still better." },
+            { icon: "🌸", text: "Progress, not perfection.Every small step counts" },
+            { icon: "⭐", text: "The hard days are the most important ones to show up. You've got this!" }
+        ];
+        function showMotivation() {
+            const q = motivQuotes[Math.floor(Math.random() * motivQuotes.length)];
+            document.getElementById('motivQuote').textContent = q.icon;
+            document.getElementById('motivText').textContent = q.text;
+            document.getElementById('motivModal').classList.add('open');
+        }
+    </script>
+}
